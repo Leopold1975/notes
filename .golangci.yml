@@ -12,6 +12,7 @@ issues:
         - gocyclo
         - gosec
         - bodyclose
+        - gofumpt
 
 linters:
   disable-all: true
