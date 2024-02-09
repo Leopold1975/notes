@@ -1,0 +1,9 @@
+FROM ubuntu:20.04
+
+WORKDIR /sender
+
+COPY ../config/deploy_local_broker.yaml ./config/deploy_local_broker.yaml
+COPY ../bin/sender ./bin/sender
+COPY ../.env ./.env
+
+ENTRYPOINT ["./bin/sender", "--config", "./config/deploy_local_broker.yaml" ]

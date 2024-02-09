@@ -24,7 +24,7 @@ const (
 var ErrNoLog = errors.New("logger can not be empty")
 
 type Logger struct {
-	*zap.Logger
+	*zap.SugaredLogger
 }
 
 func New(env string) (Logger, error) {
@@ -80,7 +80,7 @@ func New(env string) (Logger, error) {
 		return Logger{}, err
 	}
 
-	return Logger{logg}, nil
+	return Logger{logg.Sugar()}, nil
 }
 
 func getCore(logLvl zapcore.Level, config zap.Config) (zapcore.Core, error) {

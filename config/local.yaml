@@ -19,8 +19,8 @@ grpcServer:
   port: :3054
 
 kafka:
-  host: 0.0.0.0
-  port: :3055
+  brokers: 
+    - 0.0.0.0:3055
   topic: notes
   partitions: 1
 

@@ -36,10 +36,11 @@ type GRPCServer struct {
 }
 
 type Kafka struct {
-	Host       string `yaml:"host"`
-	Port       string `yaml:"port"`
-	Topic      string `yaml:"topic"`
-	Partitions int    `yaml:"partitions"`
+	Brokers           []string `yaml:"brokers"`
+	Topic             string   `yaml:"topic"`
+	Partitions        int      `yaml:"partitions"`
+	ReplicationFactor int      `yaml:"replication"`
+	Group             string   `yaml:"group"`
 }
 
 type Bot struct {

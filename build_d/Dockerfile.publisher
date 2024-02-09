@@ -1,0 +1,9 @@
+FROM ubuntu:20.04
+
+WORKDIR /publisher
+
+COPY ../config/deploy_local_broker.yaml ./config/deploy_local_broker.yaml
+COPY ../bin/publisher ./bin/publisher
+COPY ../.env ./.env
+
+ENTRYPOINT ["./bin/publisher", "--config", "./config/deploy_local_broker.yaml" ]
