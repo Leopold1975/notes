@@ -4,15 +4,14 @@ import (
 	"context"
 	"flag"
 	"log"
-	"os/signal"
-	"syscall"
-	"time"
-
 	notesgrpcclient "notes/internal/pkg/clients/notesGRPCclient"
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/logger"
 	"notes/internal/publisher"
 	"notes/internal/publisher/kafkapublisher"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 var configPath string

@@ -3,7 +3,6 @@ package publisher
 import (
 	"context"
 	"fmt"
-
 	"notes/internal/pkg/logger"
 	"notes/internal/pkg/models"
 )
