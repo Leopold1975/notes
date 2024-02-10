@@ -61,7 +61,8 @@ func TestBasic(t *testing.T) {
 
 	t.Run("Test Get Notes", func(t *testing.T) {
 		exp := []models.Note{}
-		mockStr.On("GetNotes", ctx).Return(exp, nilError)
+		var td time.Duration
+		mockStr.On("GetNotes", ctx, td).Return(exp, nilError)
 
 		res, err := client.GetNotes(ctx, &pb.GetNotesRequest{})
 

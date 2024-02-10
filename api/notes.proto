@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 
 package gprc_notes;
 option go_package = "./internal/notes/server/grpcserver/pb";
@@ -23,7 +24,7 @@ service Notes{
 }
 
 message GetNotesRequest {
-
+    google.protobuf.Duration time_interval = 1;
 }
 
 message GetNotesResponse {

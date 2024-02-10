@@ -41,9 +41,24 @@ func TestBasic(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		exp := []models.Note{}
-		mockStr.On("GetNotes", ctx).Return(exp, nilError)
+		var td time.Duration
+		mockStr.On("GetNotes", ctx, td).Return(exp, nilError)
 
 		req, err := http.NewRequestWithContext(ctx, "GET", "/notes/", nil)
+		assert.NoError(t, err)
+
+		serv.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Result().StatusCode)
+	})
+
+	t.Run("Test Get Notes With interval", func(t *testing.T) {
+		w := httptest.NewRecorder()
+
+		exp := []models.Note{}
+		mockStr.On("GetNotes", ctx, time.Minute*5).Return(exp, nilError)
+
+		req, err := http.NewRequestWithContext(ctx, "GET", "/notes/?interval=5m", nil)
 		assert.NoError(t, err)
 
 		serv.ServeHTTP(w, req)

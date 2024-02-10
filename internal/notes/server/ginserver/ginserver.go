@@ -5,14 +5,13 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"strconv"
-	"time"
-
 	"notes/internal/notes/app"
 	"notes/internal/notes/server/ginserver/middlewares"
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/logger"
 	"notes/internal/pkg/models"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -87,7 +86,20 @@ func (s *Server) Register() {
 
 func (s *Server) GetNotes(c *gin.Context) {
 	ctx := context.Background()
-	notes, err := s.a.GetNotes(ctx)
+	dur, ok := c.GetQuery("interval")
+	var interval time.Duration
+	if ok {
+		var err error
+		interval, err = time.ParseDuration(dur)
+		if err != nil {
+			if err := c.AbortWithError(http.StatusBadRequest, err); err != nil {
+				return
+			}
+			return
+		}
+	}
+
+	notes, err := s.a.GetNotes(ctx, interval)
 	if err != nil {
 		if err := c.AbortWithError(http.StatusInternalServerError, err); err.Err != nil {
 			return

@@ -2,9 +2,9 @@ package app
 
 import (
 	"context"
-
 	"notes/internal/notes/storage"
 	"notes/internal/pkg/models"
+	"time"
 )
 
 type App interface {
@@ -26,8 +26,8 @@ func (a *NotesApp) CreateNote(ctx context.Context, note models.Note) error {
 	return a.str.CreateNote(ctx, note)
 }
 
-func (a *NotesApp) GetNotes(ctx context.Context) ([]models.Note, error) {
-	return a.str.GetNotes(ctx)
+func (a *NotesApp) GetNotes(ctx context.Context, interval time.Duration) ([]models.Note, error) {
+	return a.str.GetNotes(ctx, interval)
 }
 
 func (a *NotesApp) GetNote(ctx context.Context, id uint64) (models.Note, error) {
