@@ -2,8 +2,9 @@ package interceptor
 
 import (
 	"context"
-	"notes/internal/pkg/logger"
 	"time"
+
+	"notes/internal/pkg/logger"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"

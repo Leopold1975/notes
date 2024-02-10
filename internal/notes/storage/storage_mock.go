@@ -2,8 +2,9 @@ package storage
 
 import (
 	"context"
-	"notes/internal/pkg/models"
 	"time"
+
+	"notes/internal/pkg/models"
 
 	"github.com/stretchr/testify/mock"
 )

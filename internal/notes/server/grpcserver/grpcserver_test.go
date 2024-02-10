@@ -3,6 +3,9 @@ package grpcserver_test
 import (
 	"context"
 	"net"
+	"testing"
+	"time"
+
 	"notes/internal/notes/app"
 	"notes/internal/notes/server/grpcserver"
 	"notes/internal/notes/server/grpcserver/pb"
@@ -10,8 +13,6 @@ import (
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/logger"
 	"notes/internal/pkg/models"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

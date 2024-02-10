@@ -1,8 +1,9 @@
 package middlewares
 
 import (
-	"notes/internal/pkg/logger"
 	"time"
+
+	"notes/internal/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"

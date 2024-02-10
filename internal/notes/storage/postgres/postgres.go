@@ -6,10 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
+
 	"notes/internal/notes/storage"
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/models"
-	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5/pgconn"

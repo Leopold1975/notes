@@ -3,8 +3,9 @@ package storage
 import (
 	"context"
 	"errors"
-	"notes/internal/pkg/models"
 	"time"
+
+	"notes/internal/pkg/models"
 )
 
 var (
