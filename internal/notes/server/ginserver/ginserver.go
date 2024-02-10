@@ -5,14 +5,13 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"strconv"
-	"time"
-
 	"notes/internal/notes/app"
 	"notes/internal/notes/server/ginserver/middlewares"
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/logger"
 	"notes/internal/pkg/models"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )

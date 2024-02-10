@@ -2,10 +2,9 @@ package app
 
 import (
 	"context"
-	"time"
-
 	"notes/internal/notes/storage"
 	"notes/internal/pkg/models"
+	"time"
 )
 
 type App interface {
