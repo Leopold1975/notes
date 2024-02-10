@@ -8,11 +8,12 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"notes/internal/pkg/config"
-	"notes/internal/pkg/models"
 	"path"
 	"strconv"
 	"time"
+
+	"notes/internal/pkg/config"
+	"notes/internal/pkg/models"
 )
 
 var ErrNotFound = errors.New("not found")
