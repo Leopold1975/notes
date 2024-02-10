@@ -1,0 +1,72 @@
+version: "3"
+
+services:
+  notes_db:
+    image: 'postgres:16.1'
+    container_name: notes_db
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+    - ../.init/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  notes_api:
+    container_name: notes_api
+    ports:
+      - '4040:4040'
+      - '4041:4041'
+    build:
+      context: ./..
+      dockerfile: ./build_d/Dockerfile.notes_api
+    links:
+      - notes_db
+    depends_on:
+      - notes_db
+    environment:
+     - POSTGRES_PASSWORD=postgres
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    ports:
+      - '4042:4042'
+    environment:
+      - KAFKA_ENABLE_KRAFT=no
+      #- KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:4042
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:4042
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_BROKER_ID=1
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+
+  publisher:
+    build:
+      context: ./..
+      dockerfile: ./build_d/Dockerfile.publisher
+    links:
+      - kafka
+      - notes_api
+    depends_on:
+      - kafka
+      - zookeeper
+
+  sender:
+    build:
+      context: ./..
+      dockerfile: ./build_d/Dockerfile.sender
+    links:
+      - kafka
+      - notes_api
+    depends_on:
+      - kafka
+      - zookeeper
