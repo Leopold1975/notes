@@ -3,7 +3,6 @@ package grpcserver
 import (
 	"context"
 	"net"
-
 	"notes/internal/notes/app"
 	"notes/internal/notes/server/grpcserver/interceptor"
 	"notes/internal/notes/server/grpcserver/pb"
@@ -61,8 +60,8 @@ func (s *Server) Shutdown(_ context.Context) error {
 	return nil
 }
 
-func (s *Server) GetNotes(ctx context.Context, _ *pb.GetNotesRequest) (*pb.GetNotesResponse, error) {
-	notes, err := s.a.GetNotes(ctx)
+func (s *Server) GetNotes(ctx context.Context, r *pb.GetNotesRequest) (*pb.GetNotesResponse, error) {
+	notes, err := s.a.GetNotes(ctx, r.TimeInterval.AsDuration())
 	if err != nil {
 		return &pb.GetNotesResponse{}, status.Error(codes.Internal, err.Error())
 	}

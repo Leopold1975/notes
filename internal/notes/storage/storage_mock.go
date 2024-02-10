@@ -2,8 +2,8 @@ package storage
 
 import (
 	"context"
-
 	"notes/internal/pkg/models"
+	"time"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -19,10 +19,10 @@ func (s *MockStorage) CreateNote(_ context.Context, n models.Note) error {
 	return args.Error(0)
 }
 
-func (s *MockStorage) GetNotes(_ context.Context) ([]models.Note, error) {
+func (s *MockStorage) GetNotes(_ context.Context, t time.Duration) ([]models.Note, error) {
 	ctx := context.Background()
 
-	args := s.Called(ctx)
+	args := s.Called(ctx, t)
 
 	return args.Get(0).([]models.Note), args.Error(1)
 }

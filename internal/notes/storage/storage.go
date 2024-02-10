@@ -3,8 +3,8 @@ package storage
 import (
 	"context"
 	"errors"
-
 	"notes/internal/pkg/models"
+	"time"
 )
 
 var (
@@ -18,7 +18,7 @@ type NoteCreater interface {
 }
 
 type NotesGetter interface {
-	GetNotes(context.Context) ([]models.Note, error)
+	GetNotes(context.Context, time.Duration) ([]models.Note, error)
 }
 
 type NoteDeleter interface {

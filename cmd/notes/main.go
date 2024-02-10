@@ -4,16 +4,15 @@ import (
 	"context"
 	"flag"
 	"log"
-	"os/signal"
-	"sync"
-	"syscall"
-	"time"
-
 	"notes/internal/notes/app"
 	"notes/internal/notes/controller/notes"
 	"notes/internal/notes/storage/postgres"
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/logger"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
 
 	"go.uber.org/zap"
 )

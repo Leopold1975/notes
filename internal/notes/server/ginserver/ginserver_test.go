@@ -6,15 +6,14 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"testing"
-	"time"
-
 	"notes/internal/notes/app"
 	"notes/internal/notes/server/ginserver"
 	"notes/internal/notes/storage"
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/logger"
 	"notes/internal/pkg/models"
+	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -41,9 +40,24 @@ func TestBasic(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		exp := []models.Note{}
-		mockStr.On("GetNotes", ctx).Return(exp, nilError)
+		var td time.Duration
+		mockStr.On("GetNotes", ctx, td).Return(exp, nilError)
 
 		req, err := http.NewRequestWithContext(ctx, "GET", "/notes/", nil)
+		assert.NoError(t, err)
+
+		serv.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Result().StatusCode)
+	})
+
+	t.Run("Test Get Notes With interval", func(t *testing.T) {
+		w := httptest.NewRecorder()
+
+		exp := []models.Note{}
+		mockStr.On("GetNotes", ctx, time.Minute*5).Return(exp, nilError)
+
+		req, err := http.NewRequestWithContext(ctx, "GET", "/notes/?interval=5m", nil)
 		assert.NoError(t, err)
 
 		serv.ServeHTTP(w, req)

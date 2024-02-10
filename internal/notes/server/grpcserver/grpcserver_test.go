@@ -3,9 +3,6 @@ package grpcserver_test
 import (
 	"context"
 	"net"
-	"testing"
-	"time"
-
 	"notes/internal/notes/app"
 	"notes/internal/notes/server/grpcserver"
 	"notes/internal/notes/server/grpcserver/pb"
@@ -13,6 +10,8 @@ import (
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/logger"
 	"notes/internal/pkg/models"
+	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -61,7 +60,8 @@ func TestBasic(t *testing.T) {
 
 	t.Run("Test Get Notes", func(t *testing.T) {
 		exp := []models.Note{}
-		mockStr.On("GetNotes", ctx).Return(exp, nilError)
+		var td time.Duration
+		mockStr.On("GetNotes", ctx, td).Return(exp, nilError)
 
 		res, err := client.GetNotes(ctx, &pb.GetNotesRequest{})
 

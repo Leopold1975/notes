@@ -1,0 +1,12 @@
+FROM ubuntu:20.04
+
+WORKDIR /notes
+
+COPY ../config/deploy_local.yaml ./config/deploy_local.yaml
+COPY ../migrations ./migrations
+COPY ../bin/notes ./bin/notes
+COPY ../.env .env
+
+RUN chmod +x /notes/bin/notes
+
+ENTRYPOINT ["./bin/notes", "--config", "./config/deploy_local.yaml" ]

@@ -4,16 +4,17 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
-	"time"
-
-	"github.com/jackc/pgx/v5/pgconn"
-	_ "github.com/jackc/pgx/v5/stdlib" // used for driver
-	"github.com/pressly/goose/v3"
-
 	"notes/internal/notes/storage"
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/models"
+	"time"
+
+	"github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5/pgconn"
+	_ "github.com/jackc/pgx/v5/stdlib" // used for driver
+	"github.com/pressly/goose/v3"
 )
 
 // TODO: DB requests should create their own context with timeout, which is set dut to config.
@@ -45,7 +46,7 @@ func connect(ctx context.Context, cfg config.Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	n := 1e6
+	n := 1e9
 loop:
 	for {
 		select {
@@ -94,9 +95,11 @@ func (s *Storage) CreateNote(ctx context.Context, note models.Note) error {
 	// access to it without requesting db, like this: redisDB.Add(Key: id, Value: note).
 	query := `INSERT INTO notes(title, description, date_added, date_notify) 
 	VALUES ($1, $2, $3, $4)`
+
 	row := s.db.QueryRowContext(
 		ctx, query, note.Title, note.Description,
-		time.Now().Format("2006-01-02 15:04:05-0700"), note.DateNotify,
+		time.Now().Format("2006-01-02 15:04:05-0700"),
+		note.DateNotify.Format("2006-01-02 15:04:05-0700"),
 	)
 	if row.Err() != nil {
 		return row.Err()
@@ -105,8 +108,19 @@ func (s *Storage) CreateNote(ctx context.Context, note models.Note) error {
 	return nil
 }
 
-func (s *Storage) GetNotes(ctx context.Context) ([]models.Note, error) {
-	query := `SELECT id, title, description, date_added, date_notify FROM notes`
+func (s *Storage) GetNotes(ctx context.Context, interval time.Duration) ([]models.Note, error) {
+	querySq := squirrel.Select("id", "title", "description", "date_added", "date_notify").From("notes")
+	if interval > 0 {
+		querySq = querySq.Where(squirrel.And{
+			squirrel.Expr(fmt.Sprintf("date_notify < NOW() +  '%s'", interval.String())),
+			squirrel.Expr("date_notify >= NOW()"),
+		})
+	}
+	query, _, err := querySq.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
 	rows, err := s.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err

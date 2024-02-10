@@ -2,7 +2,6 @@ package notes
 
 import (
 	"errors"
-
 	"notes/internal/notes/app"
 	"notes/internal/notes/controller"
 	"notes/internal/notes/server/ginserver"

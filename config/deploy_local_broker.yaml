@@ -1,7 +1,7 @@
 env: dev
 
 server:
-  host: 0.0.0.0
+  host: notes_api
   port: :4040
   shutdown: 5
 
@@ -14,7 +14,7 @@ db:
   version: 1
 
 grpcServer:
-  host: 0.0.0.0
+  host: notes_api
   port: :4041
 
 kafka:
@@ -28,4 +28,3 @@ kafka:
 
 bot:
   host: api.telegram.org
-
