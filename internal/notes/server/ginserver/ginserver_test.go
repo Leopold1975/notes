@@ -6,15 +6,14 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"testing"
-	"time"
-
 	"notes/internal/notes/app"
 	"notes/internal/notes/server/ginserver"
 	"notes/internal/notes/storage"
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/logger"
 	"notes/internal/pkg/models"
+	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
