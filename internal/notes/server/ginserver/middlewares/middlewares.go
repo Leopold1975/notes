@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 )
 
 func LoggingMiddleware(logg logger.Logger) gin.HandlerFunc {
@@ -23,13 +22,13 @@ func LoggingMiddleware(logg logger.Logger) gin.HandlerFunc {
 		latencyTime := latency.String()
 		statusCode := ctx.Writer.Status()
 
-		logg.Info("REST API request",
-			zap.String("METHOD", reqMethod),
-			zap.String("URI", reqURI),
-			zap.Int("STATUS", statusCode),
-			zap.String("LATENCY", latencyTime),
-			zap.String("Client IP", clientIP),
-			zap.String("User Agent", userAgent),
+		logg.Infof("REST API request	METHOD %s	URI %s	STATUS %d	Latency %s	Client IP %s	User Agent %s\n",
+			reqMethod,
+			reqURI,
+			statusCode,
+			latencyTime,
+			clientIP,
+			userAgent,
 		)
 		ctx.Next()
 	}

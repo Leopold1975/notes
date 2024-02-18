@@ -19,6 +19,7 @@ func TestMessage(t *testing.T) {
 		Description: "test",
 		DateAdded:   tm,
 		DateNotify:  tm,
+		Delay:       time.Minute * 20,
 	}
 
 	m, err := models.NoteToMessage(n)

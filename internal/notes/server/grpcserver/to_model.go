@@ -3,6 +3,7 @@ package grpcserver
 import (
 	"notes/internal/notes/server/grpcserver/pb"
 	"notes/internal/pkg/models"
+	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -14,6 +15,7 @@ func ToNote(n *pb.Note) models.Note {
 		Description: n.Description,
 		DateAdded:   n.DateAdded.AsTime(),
 		DateNotify:  n.DateNotify.AsTime(),
+		Delay:       time.Duration(n.Delay),
 	}
 }
 
@@ -42,5 +44,6 @@ func ToPBNote(n models.Note) *pb.Note {
 		Description: n.Description,
 		DateAdded:   timestamppb.New(n.DateAdded),
 		DateNotify:  timestamppb.New(n.DateNotify),
+		Delay:       int64(n.Delay),
 	}
 }

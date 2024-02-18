@@ -13,6 +13,7 @@ message Note {
     string description = 3;
     google.protobuf.Timestamp dateAdded = 4;
     google.protobuf.Timestamp dateNotify = 5;
+    int64 delay = 6;
 }
 
 service Notes{

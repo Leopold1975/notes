@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"bou.ke/monkey"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -69,15 +70,23 @@ func TestBasic(t *testing.T) {
 		w := httptest.NewRecorder()
 		tm, err := time.Parse("02.01.2006 15:04", "14.01.2024 11:03")
 		assert.NoError(t, err)
+
+		patch := monkey.Patch(time.Now, func() time.Time {
+			return tm
+		})
+		defer patch.Unpatch()
+
 		note := models.Note{
 			Title:       "test",
 			Description: "test",
 			DateAdded:   tm,
-			DateNotify:  tm,
+			DateNotify:  tm.Add(time.Minute * 20),
+			Delay:       time.Minute * 20,
 		}
 
 		mockStr.On("CreateNote", ctx, note).Return(nilError)
 
+		note.DateNotify = tm
 		b, err := json.Marshal(note)
 		assert.NoError(t, err)
 
@@ -100,6 +109,7 @@ func TestBasic(t *testing.T) {
 			Description: "test",
 			DateAdded:   tm,
 			DateNotify:  tm,
+			Delay:       time.Minute * 20,
 		}
 
 		mockStr.On("GetNote", ctx, note.ID).Return(note, nilError)
@@ -128,6 +138,7 @@ func TestBasic(t *testing.T) {
 			Description: "test",
 			DateAdded:   tm,
 			DateNotify:  tm,
+			Delay:       time.Minute * 20,
 		}
 
 		mockStr.On("DeleteNote", ctx, note.ID).Return(nilError)
