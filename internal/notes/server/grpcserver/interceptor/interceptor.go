@@ -5,7 +5,6 @@ import (
 	"notes/internal/pkg/logger"
 	"time"
 
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
@@ -44,13 +43,13 @@ func LoggingInterceptor(logg logger.Logger) UnaryServerInterceptor {
 			message = stat.Message()
 		}
 
-		logg.Info("GRPC API request",
-			zap.String("METHOD", method),
-			zap.String("STATUS", statusCode),
-			zap.String("Message", message),
-			zap.String("LATENCY", latency.String()),
-			zap.String("Client IP", clientIP),
-			zap.String("User Agent", userAgent),
+		logg.Infof("GRPC API request	METHOD %s	STATUS %s	Latency %s	Message %s	Client IP %s	User Agent %s\n",
+			method,
+			statusCode,
+			latency.String(),
+			message,
+			clientIP,
+			userAgent,
 		)
 		return resp, err
 	}

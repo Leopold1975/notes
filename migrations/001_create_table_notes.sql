@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS notes (
     title varchar(30),
     description varchar(255), 
     date_added timestamptz,
-    date_notify timestamptz
+    date_notify timestamptz,
+    delay interval
 );
 
 -- +goose Down

@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"bou.ke/monkey"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -71,12 +72,19 @@ func TestBasic(t *testing.T) {
 
 	t.Run("Test Create Note", func(t *testing.T) {
 		tm, err := time.Parse("02.01.2006 15:04", "14.01.2024 11:03")
+
+		patch := monkey.Patch(time.Now, func() time.Time {
+			return tm
+		})
+		defer patch.Unpatch()
+
 		assert.NoError(t, err)
 		note := models.Note{
 			Title:       "test",
 			Description: "test",
-			DateAdded:   tm,
-			DateNotify:  tm,
+			DateAdded:   time.Now(),
+			DateNotify:  tm.Add(time.Minute * 20),
+			Delay:       time.Minute * 20,
 		}
 
 		mockStr.On("CreateNote", ctx, note).Return(nilError)
@@ -101,6 +109,7 @@ func TestBasic(t *testing.T) {
 			Description: "test",
 			DateAdded:   tm,
 			DateNotify:  tm,
+			Delay:       time.Minute * 20,
 		}
 
 		ctx := context.Background()

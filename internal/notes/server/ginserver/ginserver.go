@@ -2,11 +2,11 @@ package ginserver
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"net/http"
-	"notes/internal/notes/app"
+	"notes/internal/notes/server"
 	"notes/internal/notes/server/ginserver/middlewares"
+	"notes/internal/notes/storage"
 	"notes/internal/pkg/config"
 	"notes/internal/pkg/logger"
 	"notes/internal/pkg/models"
@@ -17,14 +17,14 @@ import (
 )
 
 type Server struct {
-	a    app.App
+	a    server.App
 	cfg  config.Server
 	srv  *http.Server
 	logg logger.Logger
 	e    *gin.Engine
 }
 
-func New(a app.App, cfg config.Server, logg logger.Logger) *Server {
+func New(a server.App, cfg config.Server, logg logger.Logger) *Server {
 	s := &Server{
 		a:   a,
 		cfg: cfg,
@@ -119,22 +119,30 @@ func (s *Server) GetNote(c *gin.Context) {
 	}
 	note, err := s.a.GetNote(ctx, id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, storage.ErrNotFound) {
 			c.AbortWithStatus(http.StatusNotFound)
 			return
 		}
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	s.logg.Debugf("get note debug: note %v\n", note)
 	c.JSON(200, note)
 }
 
 func (s *Server) CreateNote(c *gin.Context) {
 	var n models.Note
-	c.BindJSON(&n)
+	if err := c.BindJSON(&n); err != nil {
+		s.logg.Debugf("create note debug: error: %v\n", err)
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 
+	s.logg.Debugf("create note debug: note: %v\n", n)
 	ctx := context.Background()
 	if err := s.a.CreateNote(ctx, n); err != nil {
+		s.logg.Debugf("error: %v\n", err)
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -165,13 +173,44 @@ func (s *Server) DeleteNote(c *gin.Context) {
 
 func (s *Server) UpdateNote(c *gin.Context) {
 	var n models.Note
-	c.BindJSON(&n)
-
-	ctx := context.Background()
-	if err := s.a.UpdateNote(ctx, n); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+	if err := c.BindJSON(&n); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+	s.logg.Debugf("update note debug: note: %v\n", n)
+	s.logg.Debugf("refreshed header: %s\n", c.GetHeader("Refreshed"))
+	ctx := context.Background()
+	switch {
+	case c.GetHeader("Refreshed") != "":
+		if c.GetHeader("Refreshed") != "true" {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		s.logg.Debugf("refresh note debug: note: %v\n", n)
+
+		if err := s.a.RefreshNote(ctx, n); err != nil {
+			if errors.Is(err, storage.ErrNotFound) {
+				c.AbortWithStatus(http.StatusNotFound)
+				return
+			}
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+	default:
+		if err := s.a.UpdateNote(ctx, n); err != nil {
+			switch {
+			case errors.Is(err, storage.ErrNotFound):
+				c.AbortWithStatus(http.StatusNotFound)
+				return
+			case errors.Is(err, storage.ErrNotEnoughArguments):
+				c.AbortWithError(http.StatusBadRequest, err)
+				return
+			}
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+	}
+
 	c.Header("Content-Type", "application/json")
 	c.Status(http.StatusNoContent)
 }
